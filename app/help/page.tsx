@@ -36,6 +36,10 @@ export default function HelpPage() {
             assumption can be refined later. Or upload a spreadsheet on the planner page and the AI
             will tell you exactly what is missing.
           </p>
+          <p className="small muted">
+            <b>Saving your plans.</b> By default everything stays in this browser. Sign up / in with
+            Google (top right) to save your scenarios to your account and pick them up on any device.
+          </p>
         </div>
         <div>
           <ChatWidget />

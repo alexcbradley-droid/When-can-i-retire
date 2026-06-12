@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import HeaderAuth from '@/components/HeaderAuth';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/help">Help &amp; chat</Link>
               <Link href="/methodology">Methodology</Link>
             </nav>
+            <HeaderAuth />
           </div>
         </header>
         {children}
@@ -40,7 +42,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               England, Wales &amp; Northern Ireland tax bands for 2026/27 — Scottish income tax differs.
               Past performance is not a reliable indicator of future results.
             </p>
-            <p>Your data stays in your browser — nothing you enter is stored on our servers.</p>
+            <p>
+              Your data stays in your browser by default. If you sign up / in with Google, your
+              scenarios are saved to your account so you can pick them up on any device.
+            </p>
           </div>
         </footer>
       </body>

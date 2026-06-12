@@ -51,6 +51,7 @@ p { margin: 0 0 1rem; }
 .main-nav { display: flex; gap: 18px; margin-left: auto; }
 .main-nav a { color: var(--muted); font-size: .92rem; font-weight: 500; }
 .main-nav a.active, .main-nav a:hover { color: var(--accent); text-decoration: none; }
+.header-auth { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; }
 
 .site-footer { border-top: 1px solid var(--line); margin-top: 56px; padding: 28px 0 40px; color: var(--muted); font-size: .8rem; }
 .site-footer p { margin-bottom: .5rem; }
@@ -176,4 +177,5 @@ td.neg { color: var(--red); }
   .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
   .hero h1 { font-size: 1.8rem; }
   .main-nav { gap: 12px; }
+  .header-auth-hint { display: none; }
 }
