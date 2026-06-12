@@ -4,6 +4,7 @@ import { ProjectionResult } from '@/lib/engine/types';
 import { useStore } from '@/lib/store';
 import { gbp, gbpShort, ymLabel } from '@/lib/format';
 import { NetWorthChart, IncomeSpendChart } from './charts';
+import GoalPanel from './GoalPanel';
 
 export default function OverviewTab({ projection }: { projection: ProjectionResult }) {
   const { active: s } = useStore();
@@ -82,6 +83,8 @@ export default function OverviewTab({ projection }: { projection: ProjectionResu
           );
         })()}
       </div>
+
+      <GoalPanel />
 
       <div className="card section-gap">
         <div className="panel-title"><h3>Net worth by component</h3>

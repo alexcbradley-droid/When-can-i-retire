@@ -7,6 +7,9 @@ import { useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
 import { useStore } from '@/lib/store';
 import { Intake, intakeToScenario } from '@/lib/intake';
+import { Scenario } from '@/lib/engine/types';
+import { earliestRetirementDate, sustainableMonthlyIncome, withRetirementDate } from '@/lib/engine/solvers';
+import { gbp, ymLabel } from '@/lib/format';
 
 export default function UploadPanel({ onDone }: { onDone?: () => void }) {
   const store = useStore();
@@ -14,11 +17,28 @@ export default function UploadPanel({ onDone }: { onDone?: () => void }) {
   const [state, setState] = useState<'idle' | 'reading' | 'thinking'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Intake | null>(null);
+  const [imported, setImported] = useState<Scenario | null>(null);
+  const [verdict, setVerdict] = useState<{ date: string | null; income: number; planToAge: number } | null>(null);
+  const [solving, setSolving] = useState(false);
   const [over, setOver] = useState(false);
+
+  const whenCanIRetire = () => {
+    if (!imported) return;
+    setSolving(true);
+    // Yield so the button repaints before the solver blocks the main thread.
+    setTimeout(() => {
+      const date = earliestRetirementDate(imported);
+      const income = sustainableMonthlyIncome(date ? withRetirementDate(imported, date) : imported);
+      setVerdict({ date, income, planToAge: imported.people[0]?.planToAge ?? 95 });
+      setSolving(false);
+    }, 30);
+  };
 
   const handleFile = async (file: File) => {
     setError(null);
     setResult(null);
+    setImported(null);
+    setVerdict(null);
     setState('reading');
     try {
       const buf = await file.arrayBuffer();
@@ -39,6 +59,7 @@ export default function UploadPanel({ onDone }: { onDone?: () => void }) {
       const intake: Intake = data.intake;
       const scenario = intakeToScenario(intake, file.name.replace(/\.\w+$/, ''));
       store.importJson(JSON.stringify(scenario));
+      setImported(scenario);
       setResult(intake); // the user reads the notes, then opens the planner via the button
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong with that file.');
@@ -93,11 +114,27 @@ export default function UploadPanel({ onDone }: { onDone?: () => void }) {
             </>
           )}
           <div className="btn-row" style={{ marginTop: 10 }}>
-            <button className="btn primary" onClick={() => onDone?.()}>Open in the planner</button>
+            <button className="btn primary" onClick={whenCanIRetire} disabled={solving}>
+              {solving ? 'Working it out…' : 'When can I retire?'}
+            </button>
+            <button className="btn" onClick={() => onDone?.()}>Open in the planner</button>
             {store.cloudOn && !store.userEmail && (
               <button className="btn" onClick={store.signIn}>Sign in with Google to save it to your account</button>
             )}
           </div>
+          {verdict && (
+            <p style={{ margin: '10px 0 0' }}>
+              {verdict.date ? (
+                <>You could retire in <b>{ymLabel(verdict.date)}</b> with about <b>{gbp(verdict.income)}/month</b> to
+                  spend (today&apos;s money), lasting to age {verdict.planToAge}. Open the planner for the full
+                  picture and to stress-test it.</>
+              ) : (
+                <>With current spending, your money doesn&apos;t yet stretch to the planned retirement date — the
+                  plan sustains about <b>{gbp(verdict.income)}/month</b>. Open the planner to adjust savings,
+                  spending or dates.</>
+              )}
+            </p>
+          )}
         </div>
       )}
     </div>

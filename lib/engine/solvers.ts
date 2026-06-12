@@ -37,6 +37,11 @@ export function earliestRetirementDate(scenario: Scenario, maxEarlierYears = 25)
   return indexToYm(baseIdx - lo);
 }
 
+/** Copy of the scenario with every retirement date moved to `date`. */
+export function withRetirementDate(scenario: Scenario, date: string): Scenario {
+  return { ...scenario, employments: scenario.employments.map((e) => ({ ...e, retirementDate: date })) };
+}
+
 /**
  * "Can I retire on my target date / with my target income?" Forward check.
  * Returns the sustainable income with every retirement date moved to the goal.
@@ -49,9 +54,7 @@ export function goalCheck(scenario: Scenario): {
 } {
   const targetDate = scenario.goals.targetRetirementDate ?? null;
   const targetIncome = scenario.goals.targetMonthlyIncome ?? null;
-  const s = targetDate
-    ? { ...scenario, employments: scenario.employments.map((e) => ({ ...e, retirementDate: targetDate })) }
-    : scenario;
+  const s = targetDate ? withRetirementDate(scenario, targetDate) : scenario;
   const sustainable = sustainableMonthlyIncome(s);
   return {
     targetDate,
@@ -59,6 +62,73 @@ export function goalCheck(scenario: Scenario): {
     sustainableAtTarget: sustainable,
     meetsIncomeGoal: targetIncome !== null ? sustainable >= targetIncome : null,
   };
+}
+
+export interface GoalPlanResult {
+  targetDate: string;
+  targetIncome: number;
+  sustainableAtTarget: number; // £/month today's money, retiring on the target date
+  met: boolean;
+  /** Extra £/month saving (today's money, invested) that closes the gap; null when met or unattainable. */
+  extraMonthlySaving: number | null;
+  /** First retirement date at which the income goal becomes sustainable; null if never within 30 years. */
+  laterDateMeetingGoal: string | null;
+}
+
+/**
+ * What it takes to hit both goals: checks the target date + income, and when
+ * short, solves for (a) the extra monthly saving that closes the gap and
+ * (b) the later retirement date that meets the income goal as it stands.
+ */
+export function goalPlan(scenario: Scenario): GoalPlanResult | null {
+  const targetDate = scenario.goals.targetRetirementDate;
+  const targetIncome = scenario.goals.targetMonthlyIncome;
+  if (!targetDate || !targetIncome) return null;
+
+  const atTarget = withRetirementDate(scenario, targetDate);
+  const sustainableAtTarget = sustainableMonthlyIncome(atTarget);
+  const met = sustainableAtTarget >= targetIncome;
+
+  let extraMonthlySaving: number | null = null;
+  let laterDateMeetingGoal: string | null = null;
+
+  if (!met) {
+    // (a) extra monthly saving, via a synthetic ISA contribution (overflow
+    // beyond the allowance spills to a taxable account inside the engine)
+    const boosted = (monthly: number): Scenario => ({
+      ...atTarget,
+      accounts: [...atTarget.accounts, {
+        id: '__goal-extra__', personId: atTarget.people[0].id, name: 'Extra saving (goal)',
+        type: 'isa', value: 0, monthlyContribution: monthly,
+        assetId: 'mixed-60-40', growthPct: 5, feesPct: 0.25,
+      }],
+    });
+    const cap = 20000;
+    if (sustainableMonthlyIncome(boosted(cap)) >= targetIncome) {
+      let lo = 0; let hi = cap;
+      for (let i = 0; i < 12; i++) {
+        const mid = (lo + hi) / 2;
+        if (sustainableMonthlyIncome(boosted(mid)) >= targetIncome) hi = mid; else lo = mid;
+      }
+      extraMonthlySaving = Math.ceil(hi / 25) * 25;
+    }
+
+    // (b) retiring later instead — income is monotone in the retirement date
+    const base = ymToIndex(targetDate);
+    const okAt = (months: number) =>
+      sustainableMonthlyIncome(withRetirementDate(scenario, indexToYm(base + months))) >= targetIncome;
+    const maxMonths = 30 * 12;
+    if (okAt(maxMonths)) {
+      let lo = 0; let hi = maxMonths;
+      while (lo < hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        if (okAt(mid)) hi = mid; else lo = mid + 1;
+      }
+      laterDateMeetingGoal = indexToYm(base + lo);
+    }
+  }
+
+  return { targetDate, targetIncome, sustainableAtTarget, met, extraMonthlySaving, laterDateMeetingGoal };
 }
 
 /** Standard sensitivity grid: returns, inflation, retirement date, longevity, crash. */
