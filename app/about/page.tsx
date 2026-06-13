@@ -80,8 +80,8 @@ const projects: Project[] = [
   },
   {
     name: 'True Bricks',
-    url: 'https://truebricks.app',
-    status: 'in_development',
+    url: 'https://truebricks.online',
+    status: 'live',
     tagline: 'The true total cost of owning a UK home.',
     description:
       'A property research tool that calculates the full cost of ownership for any UK residential property: mortgage, energy, maintenance, risk factors and area data, drawn together into a single comparable view with street-level and solar-potential analysis. Built on a vibe-coding platform with an AI pair: planning and task specifications written in conversation with Claude, then executed autonomously by Claude Code against a gated test-and-verify workflow.',
