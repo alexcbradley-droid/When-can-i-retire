@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Script from 'next/script';
 import HeaderAuth from '@/components/HeaderAuth';
 import Providers from '@/components/Providers';
 import LogoMark from '@/components/Logo';
@@ -32,14 +33,40 @@ export const metadata: Metadata = {
 };
 
 // Analytics runs only on the production deployment, so local dev and Vercel
-// preview builds never send traffic. Loading itself is gated on consent
-// (see CookieConsent).
-const CLARITY_ON = process.env.VERCEL_ENV === 'production';
+// preview builds never send traffic.
+const ANALYTICS_ON = process.env.VERCEL_ENV === 'production';
+const GA_ID = 'G-QM4TF66QYS';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-GB">
       <body>
+        {ANALYTICS_ON && (
+          <>
+            {/* Google Consent Mode v2: set defaults to denied BEFORE the GA
+                library loads, so no analytics cookies are set until consent.
+                Returning visitors who already accepted are upgraded here. */}
+            <Script id="ga-consent-default" strategy="beforeInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                window.gtag = gtag;
+                gtag('consent', 'default', {
+                  ad_storage: 'denied',
+                  ad_user_data: 'denied',
+                  ad_personalization: 'denied',
+                  analytics_storage: 'denied'
+                });
+                try {
+                  if (localStorage.getItem('wcir-cookie-consent-v1') === 'granted') {
+                    gtag('consent', 'update', { analytics_storage: 'granted' });
+                  }
+                } catch (e) {}
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}');`}
+            </Script>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+          </>
+        )}
         <Providers>
           <header className="site-header no-print">
             <div className="container">
@@ -84,8 +111,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 models — avoid including names, addresses or account numbers you would not want processed.
               </p>
               <p>
-                We use privacy-conscious analytics (Microsoft Clarity and Google Analytics), loaded only if
-                you accept cookies, to understand how the site is used and improve it. No data is sold, ever.
+                We use privacy-conscious analytics (Microsoft Clarity and Google Analytics) to understand how
+                the site is used and improve it. They set cookies only if you accept — until then Google
+                Analytics runs without cookies (Consent Mode), and Microsoft Clarity does not run at all.
+                No data is sold, ever.
               </p>
               <div className="footer-crosssell">
                 <h2>More from this maker</h2>
@@ -102,7 +131,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
             </div>
           </footer>
-          <CookieConsent enabled={CLARITY_ON} clarityId="x6cmyc53rf" gaId="G-QM4TF66QYS" />
+          <CookieConsent enabled={ANALYTICS_ON} clarityId="x6cmyc53rf" />
         </Providers>
       </body>
     </html>

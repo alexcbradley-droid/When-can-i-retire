@@ -1,10 +1,13 @@
 'use client';
 
-// PECR-compliant cookie consent. The Microsoft Clarity analytics tag — the
-// only non-essential cookie source on the site — is not loaded until the
-// visitor explicitly accepts. The choice is remembered in localStorage.
-// Functional storage (saved plans, sign-in) is first-party and essential, so
-// it is not gated here.
+// PECR-compliant consent.
+// - Microsoft Clarity (session recording) is not loaded at all until the
+//   visitor accepts — it has no cookieless mode.
+// - Google Analytics uses Consent Mode v2: the tag loads on every page (set up
+//   in the root layout) but defaults to analytics_storage:'denied', so it sets
+//   no cookies until consent. Accepting flips it to 'granted' live.
+// The choice is remembered in localStorage. Functional storage (saved plans,
+// sign-in) is first-party and essential, so it is not gated here.
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -13,7 +16,12 @@ import Script from 'next/script';
 const KEY = 'wcir-cookie-consent-v1';
 type Consent = 'granted' | 'denied';
 
-export default function CookieConsent({ enabled, clarityId, gaId }: { enabled: boolean; clarityId: string; gaId?: string }) {
+function updateGtagConsent(granted: boolean) {
+  const w = window as unknown as { gtag?: (...args: unknown[]) => void };
+  w.gtag?.('consent', 'update', { analytics_storage: granted ? 'granted' : 'denied' });
+}
+
+export default function CookieConsent({ enabled, clarityId }: { enabled: boolean; clarityId: string }) {
   // undefined = still reading; null = no choice yet (show banner)
   const [consent, setConsent] = useState<Consent | null | undefined>(undefined);
 
@@ -32,32 +40,20 @@ export default function CookieConsent({ enabled, clarityId, gaId }: { enabled: b
 
   const choose = (v: Consent) => {
     try { localStorage.setItem(KEY, v); } catch { /* private mode */ }
+    updateGtagConsent(v === 'granted'); // flip GA consent live, no reload
     setConsent(v);
   };
 
   return (
     <>
       {consent === 'granted' && (
-        <>
-          <Script id="ms-clarity" strategy="afterInteractive">
-            {`(function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window,document,"clarity","script","${clarityId}");`}
-          </Script>
-          {gaId && (
-            <>
-              <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
-              <Script id="ga4" strategy="afterInteractive">
-                {`window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${gaId}');`}
-              </Script>
-            </>
-          )}
-        </>
+        <Script id="ms-clarity" strategy="afterInteractive">
+          {`(function(c,l,a,r,i,t,y){
+              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window,document,"clarity","script","${clarityId}");`}
+        </Script>
       )}
       {consent === null && (
         <div className="cookie-banner no-print" role="dialog" aria-label="Cookie choices">
