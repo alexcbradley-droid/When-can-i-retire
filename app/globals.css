@@ -66,6 +66,10 @@ p { margin: 0 0 1rem; }
 
 .site-footer { border-top: 1px solid var(--line); margin-top: 56px; padding: 28px 0 40px; color: var(--muted); font-size: .8rem; }
 .site-footer p { margin-bottom: .5rem; }
+.footer-crosssell { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.footer-crosssell h2 { font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+.footer-crosssell ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.footer-crosssell a { font-weight: 600; }
 
 /* ---- cards / panels ---- */
 .card {

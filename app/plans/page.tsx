@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import PlansPage from '@/components/PlansPage';
 import { RequireSignIn } from '@/components/Gate';
 
-export const metadata = { title: 'My plans — When Can I Retire?' };
+export const metadata = { title: 'My plans — When Can I Retire?', robots: { index: false } };
 
 export default function Plans() {
   return (

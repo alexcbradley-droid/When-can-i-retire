@@ -4,6 +4,7 @@ export const metadata = {
   title: 'About — When Can I Retire?',
   description:
     'How the When Can I Retire? planner works, and how it was built: one person directing AI tools, with Claude Code writing the codebase and Claude as architect and operations engineer.',
+  alternates: { canonical: '/about' },
 };
 
 interface Project {
@@ -27,7 +28,7 @@ const STATUS_LABEL: Record<Project['status'], string> = {
 const projects: Project[] = [
   {
     name: 'When Can I Retire?',
-    url: 'https://when-can-i-retire-six.vercel.app',
+    url: 'https://whencaniretire.day',
     status: 'live',
     tagline: 'Personal retirement-date modelling, built in the open.',
     description:

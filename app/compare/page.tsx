@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import ComparePage from '@/components/ComparePage';
 import { RequireSignIn } from '@/components/Gate';
 
-export const metadata = { title: 'Compare plans — When Can I Retire?' };
+export const metadata = { title: 'Compare plans — When Can I Retire?', alternates: { canonical: '/compare' } };
 
 export default function Compare() {
   return (

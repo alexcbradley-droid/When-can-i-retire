@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import PlanApp from '@/components/PlanApp';
 
-export const metadata = { title: 'Planner — When Can I Retire?' };
+export const metadata = { title: 'Planner — When Can I Retire?', alternates: { canonical: '/plan' } };
 
 export default function PlanPage({ searchParams }: { searchParams: { demo?: string } }) {
   return (

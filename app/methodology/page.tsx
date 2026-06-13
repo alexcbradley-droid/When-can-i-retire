@@ -1,7 +1,7 @@
 import { PLSA } from '@/lib/engine/uk-rules';
 import { gbp } from '@/lib/format';
 
-export const metadata = { title: 'Methodology — When Can I Retire?' };
+export const metadata = { title: 'Methodology — When Can I Retire?', alternates: { canonical: '/methodology' } };
 
 export default function MethodologyPage() {
   return (
@@ -12,6 +12,7 @@ export default function MethodologyPage() {
         verified June 2026 against official sources (DWP, HMRC, Commons Library briefings and
         professional tax summaries). Current tax year: 2026/27.
       </p>
+      <p className="pill">Tax year 2026/27 (England, Wales &amp; Northern Ireland) · last reviewed 13 June 2026</p>
 
       <div className="card">
         <h3>How the projection works</h3>
@@ -51,8 +52,19 @@ export default function MethodologyPage() {
 
       <div className="card">
         <h3>Tax (England, Wales &amp; Northern Ireland, 2026/27)</h3>
+        <table className="data" style={{ marginBottom: 12 }}>
+          <thead>
+            <tr><th>Income tax band</th><th>Taxable income</th><th>Rate</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Personal allowance</td><td>Up to £12,570</td><td>0%</td></tr>
+            <tr><td>Basic rate</td><td>£12,571 – £50,270</td><td>20%</td></tr>
+            <tr><td>Higher rate</td><td>£50,271 – £125,140</td><td>40%</td></tr>
+            <tr><td>Additional rate</td><td>Over £125,140</td><td>45%</td></tr>
+          </tbody>
+        </table>
         <ul className="small">
-          <li>Personal allowance £12,570 (tapered above £100,000); 20% to £50,270; 40% to £125,140; 45% above. Thresholds frozen to April 2031 (Autumn Budget 2025). Scottish bands are not supported.</li>
+          <li>The personal allowance is tapered away above £100,000. Thresholds are frozen to April 2031 (Autumn Budget 2025). Scottish bands are not supported.</li>
           <li>Employee National Insurance 8%/2% while working, none after State Pension age and none on pension or rental income.</li>
           <li>Capital gains tax on taxable investment accounts: £3,000 annual exempt amount, 18%/24%. Your main home is exempt (private residence relief); other property sales pay 24% in the model.</li>
           <li>Rental income is taxed as income with the 20% Section 24 credit on mortgage interest.</li>

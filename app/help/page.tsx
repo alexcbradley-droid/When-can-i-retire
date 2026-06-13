@@ -1,4 +1,4 @@
-export const metadata = { title: 'Help — When Can I Retire?' };
+export const metadata = { title: 'Help — When Can I Retire?', alternates: { canonical: '/help' } };
 
 const checklist: { item: string; where: string }[] = [
   { item: 'Date of birth (you and your partner)', where: 'Sets your State Pension age and the plan timeline.' },

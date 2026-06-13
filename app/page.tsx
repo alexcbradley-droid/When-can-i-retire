@@ -33,8 +33,10 @@ export default function Home() {
       <section className="hero container">
         <h1>Work out when you can afford to retire</h1>
         <p className="lead">
-          A free UK retirement planner. Enter your details — or upload your own spreadsheet — and see
-          your earliest retirement date, sustainable income, and how your plan holds up under stress.
+          <b>When Can I Retire?</b> is a free UK retirement planner that projects your pensions, savings,
+          investments and property — with UK tax built in — to find your earliest retirement date, the
+          income your plan can sustain, and how it holds up under stress. Enter your details or upload a
+          spreadsheet to begin.
         </p>
         <div className="btn-row" style={{ justifyContent: 'center' }}>
           <Link href="/plan" className="btn cta">Start planning — free, no sign-up</Link>
@@ -68,8 +70,32 @@ export default function Home() {
             Everything is guidance, not advice — see the <Link href="/methodology">methodology page</Link> for
             every assumption, source and known simplification.
           </p>
+          <p className="small muted" style={{ marginBottom: 0, marginTop: 10 }}>
+            Tax figures current for the 2026/27 UK tax year (England, Wales &amp; Northern Ireland) ·
+            last reviewed 13 June 2026.
+          </p>
         </div>
       </section>
+
+      <script
+        type="application/ld+json"
+        // Accurate structured data: a free finance web application.
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebApplication',
+            name: 'When Can I Retire?',
+            url: 'https://whencaniretire.day',
+            applicationCategory: 'FinanceApplication',
+            operatingSystem: 'Web browser',
+            description:
+              'A free UK retirement planner that projects pensions, savings, investments and property with UK tax built in, finds your earliest retirement date and sustainable income, and stress-tests the plan with Monte Carlo simulation.',
+            offers: { '@type': 'Offer', price: '0', priceCurrency: 'GBP' },
+            inLanguage: 'en-GB',
+            isAccessibleForFree: true,
+          }),
+        }}
+      />
     </main>
   );
 }

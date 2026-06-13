@@ -6,10 +6,29 @@ import LogoMark from '@/components/Logo';
 import CookieConsent from '@/components/CookieConsent';
 import './globals.css';
 
+const SITE_URL = 'https://whencaniretire.day';
+const DESCRIPTION =
+  'A free UK retirement calculator: project your pensions, savings, investments and property; find your earliest retirement date; compare scenarios; stress-test your plan.';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'When Can I Retire? — UK retirement planner',
-  description:
-    'A free UK retirement calculator: project your pensions, savings, investments and property; find your earliest retirement date; compare scenarios; stress-test your plan.',
+  description: DESCRIPTION,
+  alternates: { canonical: '/' },
+  applicationName: 'When Can I Retire?',
+  openGraph: {
+    type: 'website',
+    siteName: 'When Can I Retire?',
+    locale: 'en_GB',
+    url: '/',
+    title: 'When Can I Retire? — UK retirement planner',
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'When Can I Retire? — UK retirement planner',
+    description: DESCRIPTION,
+  },
 };
 
 // Analytics runs only on the production deployment, so local dev and Vercel
@@ -68,6 +87,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 We use privacy-conscious analytics (Microsoft Clarity) to understand how the site is used
                 and improve it. No data is sold, ever.
               </p>
+              <div className="footer-crosssell">
+                <h2>More from this maker</h2>
+                <ul>
+                  <li>
+                    <a href="https://truebricks.online" target="_blank" rel="noopener noreferrer">True Bricks</a>{' '}
+                    — work out the true total cost of owning any UK home: mortgage, energy, maintenance, risk and area data.
+                  </li>
+                  <li>
+                    <a href="https://aidailysignal.app" target="_blank" rel="noopener noreferrer">The AI Daily Signal</a>{' '}
+                    — one daily brief on everything that mattered in artificial intelligence, in plain English.
+                  </li>
+                </ul>
+              </div>
             </div>
           </footer>
           <CookieConsent enabled={CLARITY_ON} clarityId="x6cmyc53rf" />
