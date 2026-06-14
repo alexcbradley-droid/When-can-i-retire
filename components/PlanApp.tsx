@@ -12,6 +12,7 @@ import RiskTab from './RiskTab';
 import ReportTab from './ReportTab';
 import AuditTab from './AuditTab';
 import UploadPanel from './UploadPanel';
+import SavePlanButton from './SavePlanButton';
 
 const TABS = ['Overview', 'Your details', 'Projection', 'Compare', 'Risk & stress', 'Audit', 'Report'] as const;
 type Tab = (typeof TABS)[number];
@@ -68,6 +69,11 @@ export default function PlanApp({ startWithDemo }: { startWithDemo?: boolean }) 
       {tab === 'Risk & stress' && <RiskTab projection={projection} />}
       {tab === 'Audit' && <AuditTab projection={projection} />}
       {tab === 'Report' && <ReportTab projection={projection} />}
+
+      <div className="card no-print save-foot" style={{ marginTop: 16 }}>
+        <span className="muted small">Happy with your plan? Save it so you can pick up where you left off.</span>
+        <SavePlanButton className="btn cta" label="Save plan" />
+      </div>
     </main>
   );
 }

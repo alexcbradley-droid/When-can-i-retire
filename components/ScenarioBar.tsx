@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { useStore } from '@/lib/store';
 import { useSignInGate } from './Gate';
 import { downloadFile, slugify } from '@/lib/download';
+import SavePlanButton from './SavePlanButton';
 
 export default function ScenarioBar() {
   const store = useStore();
@@ -11,20 +12,6 @@ export default function ScenarioBar() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved-cloud' | 'saved-local' | 'failed'>('idle');
-
-  const savePlan = async () => {
-    setSaveState('saving');
-    try {
-      const cloud = await store.saveNow();
-      // saveNow always writes locally; `cloud` is true only when the account
-      // write demonstrably succeeded.
-      setSaveState(cloud ? 'saved-cloud' : store.userEmail ? 'failed' : 'saved-local');
-    } catch {
-      setSaveState('failed');
-    }
-    setTimeout(() => setSaveState('idle'), 4000);
-  };
 
   const exportFile = () => {
     downloadFile(`${slugify(store.active.name)}.json`, store.exportJson(), 'application/json');
@@ -47,14 +34,7 @@ export default function ScenarioBar() {
         aria-label="Scenario name"
       />
       <div className="btn-row">
-        <button className="btn small cta" onClick={savePlan} disabled={saveState === 'saving'}
-          title="Plans auto-save in this browser; sign in to keep them in your account too">
-          {saveState === 'saving' ? 'Saving…'
-            : saveState === 'saved-cloud' ? 'Saved to your account ✓'
-            : saveState === 'saved-local' ? 'Saved in this browser ✓'
-            : saveState === 'failed' ? 'Account save failed — saved locally'
-            : 'Save plan'}
-        </button>
+        <SavePlanButton />
         <button className="btn small" onClick={() => store.create('empty')}>New</button>
         <button className="btn small" onClick={() => store.duplicate()}>Duplicate</button>
         <button className="btn small" onClick={() => store.create('sample')}>Sample</button>

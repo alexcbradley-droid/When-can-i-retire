@@ -147,11 +147,14 @@ p{margin:0 0 1rem;}
 input,select,textarea{width:100%;font-family:var(--sans);font-size:1rem;padding:11px 13px;border:2px solid var(--ink);
   border-radius:var(--r-sm);background:#fff;color:var(--ink);font-variant-numeric:tabular-nums;}
 input:focus,select:focus,textarea:focus{outline:3px solid var(--gold);outline-offset:0;border-color:var(--ink);}
+.save-foot{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;}
 .checkbox-row{display:flex;align-items:flex-start;gap:9px;font-size:.92rem;margin:6px 0 14px;}
 .checkbox-row input{width:auto;margin-top:3px;}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 18px;}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:0 16px;}
+/* align-items:end bottom-aligns each cell so the (equal-height) inputs line up
+   in a row even when labels/hints above them differ in length. */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;align-items:end;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 18px;align-items:end;}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:0 16px;align-items:end;}
 
 /* ---------- SITE HEADER (light) ---------- */
 .site-header{position:sticky;top:0;z-index:50;background:rgba(247,249,247,.85);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line);}
@@ -163,6 +166,9 @@ input:focus,select:focus,textarea:focus{outline:3px solid var(--gold);outline-of
 .main-nav,.nav{display:flex;align-items:center;gap:4px;margin-left:auto;}
 .main-nav a,.nav a{padding:8px 12px;border-radius:var(--r-sm);color:var(--ink);font-weight:500;font-size:.95rem;white-space:nowrap;}
 .main-nav a:hover,.nav a:hover{background:var(--green-tint);text-decoration:none;color:var(--accent-700);}
+.nav-sep{width:1px;height:20px;background:var(--line);margin:0 4px;flex:none;}
+.nav .nav-ext{color:var(--muted);font-size:.9rem;}
+.nav .nav-ext:hover{color:var(--accent-700);}
 .menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:var(--r-sm);width:46px;height:46px;align-items:center;justify-content:center;cursor:pointer;}
 .header-auth{display:inline-flex;align-items:center;gap:10px;white-space:nowrap;}
 .header-auth .muted{color:var(--muted);}
@@ -476,6 +482,7 @@ td.neg{color:var(--bad);}
   .nav.open{display:flex;position:absolute;top:68px;left:0;right:0;flex-direction:column;align-items:stretch;gap:2px;
     background:var(--bg);border-bottom:1px solid var(--line);padding:10px 16px 16px;box-shadow:var(--sh);margin-left:0;}
   .nav.open a{padding:11px 12px;}
+  .nav.open .nav-sep{display:none;}
   .menu-btn{display:inline-flex;margin-left:auto;}
   .header-auth-hint{display:none;}
 }
