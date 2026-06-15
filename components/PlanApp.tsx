@@ -38,10 +38,13 @@ export default function PlanApp({ startWithDemo }: { startWithDemo?: boolean }) 
     [deferredActive.id, deferredActive.updatedAt],
   );
 
-  if (!loaded) return <main className="container"><p className="muted" style={{ padding: 40 }}>Loading your plans…</p></main>;
+  // Reserve viewport height while the store hydrates so the footer stays below
+  // the fold — otherwise the short "loading" view → full planner swap shoves
+  // visible content down and spikes CLS (was ~0.88 on /plan).
+  if (!loaded) return <main className="container" style={{ minHeight: '85vh', paddingTop: 18 }}><p className="muted" style={{ padding: 40 }}>Loading your plans…</p></main>;
 
   return (
-    <main className="container" style={{ paddingTop: 18 }}>
+    <main className="container" style={{ paddingTop: 18, minHeight: '85vh' }}>
       <ScenarioBar />
       <div className="btn-row no-print" style={{ marginTop: 10 }}>
         <button className="btn small" onClick={() => setShowUpload((v) => !v)}>
