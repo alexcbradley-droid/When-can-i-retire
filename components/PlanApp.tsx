@@ -1,8 +1,8 @@
 'use client';
 
-import { useDeferredValue, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStore } from '@/lib/store';
-import { fullProjection } from '@/lib/engine/solvers';
+import { useProjection } from './useProjection';
 import ScenarioBar from './ScenarioBar';
 import OverviewTab from './OverviewTab';
 import DetailsTab from './DetailsTab';
@@ -29,14 +29,10 @@ export default function PlanApp({ startWithDemo }: { startWithDemo?: boolean }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded, startWithDemo]);
 
-  // Defer the expensive projection (simulation + solvers) so typing in the
-  // editor stays responsive; updatedAt is the cheap change token.
-  const deferredActive = useDeferredValue(active);
-  const projection = useMemo(
-    () => fullProjection(deferredActive),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [deferredActive.id, deferredActive.updatedAt],
-  );
+  // Run the expensive projection (simulation + solvers) off the main thread so
+  // typing in the editor stays responsive; the previous result is shown until
+  // the new one arrives. Keyed on the cheap id/updatedAt change token inside.
+  const projection = useProjection(active);
 
   // Reserve viewport height while the store hydrates so the footer stays below
   // the fold — otherwise the short "loading" view → full planner swap shoves
